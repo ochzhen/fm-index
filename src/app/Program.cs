@@ -7,9 +7,9 @@ namespace app
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Waiting for a text:");
+            Console.WriteLine("Enter text:");
             string T = Console.ReadLine();
-            FullTextIndex fmIndex = new FullTextIndex(T);
+            FullTextIndex fmIndex = new FullTextIndex(T, 256, 0, (char) 0);
             while (true)
             {
                 Console.WriteLine("Enter pattern:");

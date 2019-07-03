@@ -1,54 +1,45 @@
 using System;
+using System.Linq;
 using FmIndex.Abstract;
 
 namespace FmIndex
 {
     public class FullTextIndex
     {
-        public const char SEPARATOR = ' ';
-        public const int ALPHABET = 256;
-
-        private int[] _smallerCount;
+        private IPrefixSum _prefixSum;
         private IOcc _occ;
 
-        public FullTextIndex(string T)
+        public FullTextIndex(string T, int alphabet, int offset, char anchor)
         {
-            T = $"{T.Replace(' ', '_')} ";
-            int[] bwt = BWT.Transform(T);
-            _smallerCount = ConstructCountArray(T, bwt);
-            _occ = new WaveletTree(T, bwt);
+            if (T.Contains(anchor))
+                throw new ArgumentException("Anchor character is already contained in the text");
+            T += anchor;
+            int[] bwtIndexes = BWT.Transform(T);
+            char[] bwt = CreateCharArray(T, bwtIndexes);
+            _prefixSum = new PrefixSum(bwt, alphabet, offset);
+            _occ = new WaveletTree(bwt);
         }
 
-        private int[] ConstructCountArray(string T, int[] bwt)
+        private char[] CreateCharArray(string s, int[] bwt)
         {
-            var counts = new int[ALPHABET];
-            for (int i = 0; i < bwt.Length; ++i)
-                counts[T[bwt[i]]]++;
-            int next = counts[0];
-            counts[0] = 0;
-            for (int i = 1; i < counts.Length; ++i)
-            {
-                int tmp = counts[i];
-                counts[i] = next;
-                next += tmp;
-            }
-            return counts;
+            var arr = new char[bwt.Length];
+            for (int i = 0; i < arr.Length; ++i)
+                arr[i] = s[bwt[i]];
+            return arr;
         }
 
         public int Count(string P)
         {
-            P = P.Replace(' ', '_');
-
             int i = P.Length - 1;
-            int lo = _smallerCount[P[i]];
-            int hi = _smallerCount[P[i] + 1];
+            int lo = _prefixSum[P[i]];
+            int hi = _prefixSum[P[i] + 1];
 
             while (lo < hi && i > 0)
             {
                 i--;
                 char c = P[i];
-                lo = _smallerCount[c] + _occ.CountOccurrencesInPrefix(c, lo);
-                hi = _smallerCount[c] + _occ.CountOccurrencesInPrefix(c, hi);
+                lo = _prefixSum[c] + _occ.CountInPrefix(c, lo);
+                hi = _prefixSum[c] + _occ.CountInPrefix(c, hi);
             }
 
             return hi - lo;

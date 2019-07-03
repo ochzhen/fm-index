@@ -4,21 +4,20 @@ namespace FmIndex
 {
     internal class WaveletTree : IOcc
     {
-        private readonly string T;
-        private readonly int[] bwt;
+        private readonly char[] s;
+        // private readonly IBitVector bitVector;
 
-        public WaveletTree(string T, int[] bwt)
+        public WaveletTree(char[] s)
         {
-            this.T = T;
-            this.bwt = bwt;
+            this.s = s;
         }
 
-        public int CountOccurrencesInPrefix(char c, int k)
+        public int CountInPrefix(char c, int len)
         {
             int count = 0;
-            for (int i = 0; i < k; ++i)
+            for (int i = 0; i < len; ++i)
             {
-                if (T[bwt[i]] == c)
+                if (s[i] == c)
                     count++;
             }
             return count;
