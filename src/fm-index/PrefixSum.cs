@@ -1,5 +1,8 @@
+using System;
+
 namespace FmIndex.Abstract
 {
+    [Serializable]
     internal class PrefixSum : IPrefixSum
     {
         private readonly int[] _counts;

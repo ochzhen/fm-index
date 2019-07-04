@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using FmIndex;
 
 namespace app
@@ -7,15 +10,41 @@ namespace app
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Enter text:");
-            string T = Console.ReadLine();
-            FullTextIndex fmIndex = new FullTextIndex(T, 256, 0, (char) 0);
+            const string indexFilename = "fm-index.dat";
+            string inputFilename = args[0];
+            
+            string T = File.ReadAllText(inputFilename);
+            var fmIndex = new FullTextIndex(T, 128, 0, (char) 0, Console.WriteLine);
+            
+            var formatter = new BinaryFormatter();
+            Serialize(fmIndex, formatter, indexFilename);
+            fmIndex = Deserialize<FullTextIndex>(indexFilename, formatter);
+
+            Console.WriteLine();
+
             while (true)
             {
                 Console.WriteLine("Enter pattern:");
                 string P = Console.ReadLine();
-                Console.WriteLine($"Count {fmIndex.Count(P)}");
+                Console.WriteLine($"Answer: {fmIndex.Count(P)} occurrences");
             }
+        }
+
+        static void Serialize(object obj, IFormatter formatter, string fileName)
+        {
+            FileStream writeStream = File.Open(fileName, FileMode.Create);
+            formatter.Serialize(writeStream, obj);
+            writeStream.Close();
+            Console.WriteLine("Serialized to " + fileName);
+        }
+
+        static T Deserialize<T>(string path, IFormatter formatter)
+        {
+            FileStream readStream = File.Open(path, FileMode.Open);
+            var obj = (T) formatter.Deserialize(readStream);
+            readStream.Close();
+            Console.WriteLine($"Deserialized from {path}");
+            return obj;
         }
     }
 }

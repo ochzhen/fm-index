@@ -1,15 +1,35 @@
+using System;
+using System.Collections;
+
 namespace FmIndex.Abstract
  {
-    internal class BitVector : IBitVector
+     [Serializable]
+    internal sealed class BitVector : IBitVector
     {
+        private readonly BitArray bits;
+
         public BitVector(bool[] arr)
         {
-            
+            Length = arr.Length;
+            bits = new BitArray(arr);
         }
 
-        int IBitVector.RankOne(int lo, int hi)
+        public int Length { get; }
+
+        public int RankOne(int len)
         {
-            throw new System.NotImplementedException();
+            int count = 0;
+            for (int i = 0; i < len; ++i)
+            {
+                if (bits[i])
+                    count++;
+            }
+            return count;
+        }
+
+        public int RankZero(int len)
+        {
+            return len - RankOne(len);
         }
     }
 }

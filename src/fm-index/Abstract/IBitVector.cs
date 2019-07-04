@@ -2,6 +2,9 @@ namespace FmIndex.Abstract
 {
     internal interface IBitVector
     {
-        int RankOne(int lo, int hi);
+        int RankZero(int len);
+        int RankOne(int len);
+
+        int Length { get; }
     }
 }
