@@ -9,7 +9,7 @@ namespace FmIndex.Abstract
         private readonly int _offset;
         private readonly int _alphabet;
 
-        public PrefixSum(char[] s, int alphabet, int offset)
+        public PrefixSum(char[] s, int offset, int alphabet)
         {
             _offset = offset;
             _alphabet = alphabet;

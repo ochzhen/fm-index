@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using FmIndex.Abstract;
 
 namespace FmIndex
@@ -10,9 +9,9 @@ namespace FmIndex
         private readonly IPrefixSum _prefixSum;
         private readonly IOcc _occ;
 
-        public FullTextIndex(string T, int alphabet, int offset, char anchor, Action<string> writeDebug)
+        public FullTextIndex(string T, char anchor, int alphabet, Action<string> writeDebug)
         {
-            if (T.Contains(anchor))
+            if (T.Contains((char)anchor))
                 throw new ArgumentException("Anchor character is already contained in the text");
             T += anchor;
             
@@ -23,11 +22,11 @@ namespace FmIndex
             char[] bwt = CreateCharArray(T, bwtIndexes);
 
             writeDebug($"PrefixSum starting {DateTime.Now.ToLongTimeString()}");
-            _prefixSum = new PrefixSum(bwt, alphabet, offset);
+            _prefixSum = new PrefixSum(bwt, anchor, alphabet);
             writeDebug($"PrefixSum finished {DateTime.Now.ToLongTimeString()}");
 
             writeDebug($"WaveletTree starting {DateTime.Now.ToLongTimeString()}");
-            var waveletTree = new WaveletTree(bwt, alphabet, offset);
+            var waveletTree = new WaveletTree(bwt);
             _occ = waveletTree;
             writeDebug($"WaveletTree finished {DateTime.Now.ToLongTimeString()}");
 

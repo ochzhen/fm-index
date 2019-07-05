@@ -8,9 +8,9 @@ namespace FmIndex
     {
         private readonly Node root;
 
-        public WaveletTree(char[] s, int alphabet, int offset)
+        public WaveletTree(char[] s)
         {
-            root = new Node(s, 0, s.Length, offset, offset + alphabet, new char[s.Length]);
+            root = new Node(s, 0, s.Length, new char[s.Length]);
         }
 
         public int CountInPrefix(char c, int len)
@@ -32,10 +32,9 @@ namespace FmIndex
             private readonly Node left;
             private readonly Node right;
 
-            public Node(char[] s, int lo, int hi, int alphaStart, int alphaEnd, char[] aux)
+            public Node(char[] s, int lo, int hi, char[] aux)
             {
-                this.alphaStart = alphaStart;
-                this.alphaEnd = alphaEnd;
+                (alphaStart, alphaEnd) = GetAlphabetBounds(s, lo, hi);
                 if (lo == hi)
                     return;
 
@@ -54,8 +53,22 @@ namespace FmIndex
                 if (alphaEnd - alphaStart <= 2)
                     return;
                 int alphaPivot = (alphaStart + alphaEnd) / 2;
-                left = new Node(s, lo, m, alphaStart, alphaPivot, aux);
-                right = new Node(s, m, hi, alphaPivot, alphaEnd, aux);
+                left = new Node(s, lo, m, aux);
+                right = new Node(s, m, hi, aux);
+            }
+
+            private (int, int) GetAlphabetBounds(char[] s, int lo, int hi)
+            {
+                int min = int.MaxValue;
+                int max = int.MinValue;
+                for (int i = lo; i < hi; ++i)
+                {
+                    if (s[i] < min)
+                        min = s[i];
+                    if (s[i] > max)
+                        max = s[i];
+                }
+                return (min, max + 1);
             }
 
             private bool BelongsLeft(int x)

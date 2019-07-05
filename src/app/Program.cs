@@ -14,7 +14,8 @@ namespace app
             string inputFilename = args[0];
             
             string T = File.ReadAllText(inputFilename);
-            var fmIndex = new FullTextIndex(T, 128, 0, (char) 0, Console.WriteLine);
+            //var fmIndex = new FullTextIndex(T, (char)96, 21, Console.WriteLine);
+            var fmIndex = new FullTextIndex(T, (char)0, 127, Console.WriteLine);
             
             var formatter = new BinaryFormatter();
             Serialize(fmIndex, formatter, indexFilename);
@@ -24,9 +25,18 @@ namespace app
 
             while (true)
             {
-                Console.WriteLine("Enter pattern:");
-                string P = Console.ReadLine();
-                Console.WriteLine($"Answer: {fmIndex.Count(P)} occurrences");
+                try
+                {
+                    Console.WriteLine("- Enter pattern:");
+                    string P = Console.ReadLine();
+                    Console.WriteLine($"Answer: {fmIndex.Count(P)} occurrences");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                }
+                Console.WriteLine();
             }
         }
 
