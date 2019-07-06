@@ -6,21 +6,17 @@ namespace FmIndex.Abstract
     internal class PrefixSum : IPrefixSum
     {
         private readonly int[] _counts;
-        private readonly int _offset;
-        private readonly int _alphabet;
 
-        public PrefixSum(char[] s, int offset, int alphabet)
+        public PrefixSum(char[] s, int alphabetSize)
         {
-            _offset = offset;
-            _alphabet = alphabet;
-            _counts = ConstructCountsArray(s);
+            _counts = ConstructCountsArray(s, alphabetSize);
         }
 
-        private int[] ConstructCountsArray(char[] s)
+        private int[] ConstructCountsArray(char[] s, int alphabetSize)
         {
-            var counts = new int[_alphabet];
+            var counts = new int[alphabetSize];
             for (int i = 0; i < s.Length; ++i)
-                counts[s[i] - _offset]++;
+                counts[s[i]]++;
             int next = counts[0];
             counts[0] = 0;
             for (int i = 1; i < counts.Length; ++i)
@@ -32,6 +28,6 @@ namespace FmIndex.Abstract
             return counts;
         }
 
-        int IPrefixSum.this[int c] => _counts[c - _offset];
+        int IPrefixSum.this[int c] => _counts[c];
     }
 }

@@ -14,8 +14,7 @@ namespace app
             string inputFilename = args[0];
             
             string T = File.ReadAllText(inputFilename);
-            //var fmIndex = new FullTextIndex(T, (char)96, 21, Console.WriteLine);
-            var fmIndex = new FullTextIndex(T, (char)0, 127, Console.WriteLine);
+            var fmIndex = new FullTextIndex(T, Console.WriteLine);
             
             var formatter = new BinaryFormatter();
             Serialize(fmIndex, formatter, indexFilename);

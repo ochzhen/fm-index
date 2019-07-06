@@ -4,13 +4,14 @@ namespace FmIndex
 {
     internal static class BWT
     {
-        static int alphabet = 256;
+        static int alphabet;
         static int[] count;
         static int[] nextSA;
         static int[] nextClasses;
         
-        public static int[] Transform(string s)
+        public static int[] Transform(char[] s, int alphabetSize)
         {
+            alphabet = alphabetSize;
             int N = s.Length;
             count = new int[Math.Max(alphabet, N)];
             nextSA = new int[N];
@@ -29,7 +30,7 @@ namespace FmIndex
             return SA;
         }
         
-        private static int[] SortChars(string s)
+        private static int[] SortChars(char[] s)
         {
             int N = s.Length;
             var SA = new int[N];
@@ -46,7 +47,7 @@ namespace FmIndex
             return SA;
         }
         
-        private static int[] ComputeClasses(string s, int[] SA)
+        private static int[] ComputeClasses(char[] s, int[] SA)
         {
             int N = s.Length;
             int[] classes = new int[N];
@@ -61,7 +62,7 @@ namespace FmIndex
             return classes;
         }
         
-        private static int[] SortDoubled(string s, int L, int[] SA, int[] classes)
+        private static int[] SortDoubled(char[] s, int L, int[] SA, int[] classes)
         {
             int N = s.Length;
             for (int i = 0; i < N; ++i)
