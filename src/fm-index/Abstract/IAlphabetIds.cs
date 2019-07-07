@@ -4,10 +4,10 @@ namespace FmIndex.Abstract
     {
         int Length { get; }
 
-        char Anchor { get; }
+        byte Anchor { get; }
 
-        char this[char c] { get; }
+        byte this[char c] { get; }
 
-        bool TryConvert(char c, out char value);
+        bool TryConvert(char c, out byte value);
     }
 }

@@ -8,12 +8,12 @@ namespace FmIndex
     {
         private readonly Node root;
 
-        public WaveletTree(char[] s)
+        public WaveletTree(byte[] s)
         {
-            root = new Node(s, 0, s.Length, new char[s.Length]);
+            root = new Node(s, 0, s.Length, new byte[s.Length]);
         }
 
-        public int CountInPrefix(char c, int len)
+        public int CountInPrefix(byte c, int len)
         {
             return root.Rank(c, len);
         }
@@ -27,12 +27,12 @@ namespace FmIndex
         private sealed class Node
         {
             private readonly IBitVector bitVector;
-            private readonly short alphaStart;
-            private readonly short alphaEnd;
+            private readonly byte alphaStart;
+            private readonly byte alphaEnd;
             private readonly Node left;
             private readonly Node right;
 
-            public Node(char[] s, int lo, int hi, char[] aux)
+            public Node(byte[] s, int lo, int hi, byte[] aux)
             {
                 (alphaStart, alphaEnd) = GetAlphabetBounds(s, lo, hi);
                 if (lo == hi)
@@ -52,12 +52,11 @@ namespace FmIndex
                 int m = StablePartition(s, lo, hi, BelongsLeft, aux);
                 if (alphaEnd - alphaStart <= 2)
                     return;
-                int alphaPivot = (alphaStart + alphaEnd) / 2;
                 left = new Node(s, lo, m, aux);
                 right = new Node(s, m, hi, aux);
             }
 
-            private (short, short) GetAlphabetBounds(char[] s, int lo, int hi)
+            private (byte, byte) GetAlphabetBounds(byte[] s, int lo, int hi)
             {
                 int min = int.MaxValue;
                 int max = int.MinValue;
@@ -68,15 +67,15 @@ namespace FmIndex
                     if (s[i] > max)
                         max = s[i];
                 }
-                return ((short)min, (short)(max + 1));
+                return ((byte)min, (byte)(max + 1));
             }
 
-            private bool BelongsLeft(int x)
+            private bool BelongsLeft(byte x)
             {
                 return x < alphaStart + (alphaEnd - alphaStart) / 2;
             }
 
-            private int StablePartition(char[] s, int lo, int hi, Func<int, bool> belongsLeft, char[] aux)
+            private int StablePartition(byte[] s, int lo, int hi, Func<byte, bool> belongsLeft, byte[] aux)
             {
                 for (int i = lo; i < hi; ++i)
                     aux[i] = s[i];
@@ -98,7 +97,7 @@ namespace FmIndex
                 return ans;
             }
 
-            public int Rank(char c, int len)
+            public int Rank(byte c, int len)
             {
                 if (len == 0 || bitVector == null || c < alphaStart || c >= alphaEnd)
                     return 0;

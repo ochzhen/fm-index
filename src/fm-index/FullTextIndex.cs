@@ -20,7 +20,7 @@ namespace FmIndex
             logInfo($"- Alphabet size: {_alphabetIds.Length}");
             logInfo($"AlphabetIds finished {DateTime.Now.ToLongTimeString()}");
 
-            char[] s = CreateTransformedToNewAlphabet(T, _alphabetIds, T.Length + 1);
+            byte[] s = CreateTransformedToNewAlphabet(T, _alphabetIds, T.Length + 1);
             s[s.Length - 1] = _alphabetIds.Anchor;
             
             logInfo($"SuffixArray starting {DateTime.Now.ToLongTimeString()}");
@@ -38,7 +38,7 @@ namespace FmIndex
                 logInfo($"Skipping CompressedSA");
             }
 
-            char[] bwt = CreateBwt(SA, s);
+            byte[] bwt = CreateBwt(SA, s);
 
             logInfo($"PrefixSum starting {DateTime.Now.ToLongTimeString()}");
             _prefixSum = new PrefixSum(bwt, _alphabetIds.Length + 1);
@@ -51,18 +51,18 @@ namespace FmIndex
             logInfo($"- Nodes in the Wavelet Tree: {waveletTree.CountNodes()}");
         }
 
-        private char[] CreateTransformedToNewAlphabet(string T, IAlphabetIds alphabetIds, int size)
+        private byte[] CreateTransformedToNewAlphabet(string T, IAlphabetIds alphabetIds, int size)
         {
-            var s = new char[size];
+            var s = new byte[size];
             for (int i = 0; i < T.Length; ++i)
                 s[i] = alphabetIds[T[i]];
             return s;
         }
 
-        private char[] CreateBwt(int[] SA, char[] s)
+        private byte[] CreateBwt(int[] SA, byte[] s)
         {
             int N = s.Length;
-            var arr = new char[SA.Length];
+            var arr = new byte[SA.Length];
             for (int i = 0; i < arr.Length; ++i)
                 arr[i] = s[(SA[i] - 1 + N) % N];
             return arr;
@@ -90,11 +90,11 @@ namespace FmIndex
             if (string.IsNullOrEmpty(P))
                 return (0, 0);
             int i = P.Length - 1;
-            char c;
+            byte c;
             if (!_alphabetIds.TryConvert(char.ToLower(P[i]), out c))
                 return (0, 0);
             int lo = _prefixSum[c];
-            int hi = _prefixSum[c + 1];
+            int hi = _prefixSum[(byte)(c + 1)];
 
             while (lo < hi && i > 0)
             {
@@ -121,16 +121,16 @@ namespace FmIndex
 
         private int LF(int idx)
         {
-            char c = DetermineChar(idx);
+            byte c = DetermineChar(idx);
             return _prefixSum[c] + _occ.CountInPrefix(c, idx + 1) - 1;
         }
 
-        private char DetermineChar(int idx)
+        private byte DetermineChar(int idx)
         {
-            for (int c = 0; c < _alphabetIds.Length; ++c)
+            for (byte c = 0; c < _alphabetIds.Length; ++c)
             {
-                if (_occ.CountInPrefix((char)c, idx) != _occ.CountInPrefix((char)c, idx + 1))
-                    return (char)c;
+                if (_occ.CountInPrefix(c, idx) != _occ.CountInPrefix(c, idx + 1))
+                    return c;
             }
             throw new Exception("Logic error: cannot determine character");
         }

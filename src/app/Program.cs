@@ -13,7 +13,16 @@ namespace app
 
         static void Main(string[] args)
         {
-            (bool load, string inputFile, string idxFile, bool setupLocate, bool verify) = ParseParams(args);
+            checked
+            {
+                Run(args);
+            }
+        }
+
+        static void Run(string[] args)
+        {
+            (bool load, string inputFile, string idxFile,
+                bool setupLocate, bool verify, int margin) = ParseParams(args);
             FullTextIndex fmIndex;
             string T = null;
 
@@ -60,7 +69,7 @@ namespace app
                         {
                             Console.Write("== Verification: ||");
                             foreach(int pos in positions)
-                                Console.Write($"{T.Substring(pos, P.Length)}||");
+                                Console.Write($" ..{T.Substring(Math.Max(pos-margin, 0), P.Length + 2*margin).Replace($"{Environment.NewLine}", " ")}.. ||");
                             Console.WriteLine();
                         }
                     }
@@ -74,13 +83,14 @@ namespace app
             }
         }
 
-        static (bool, string, string, bool, bool) ParseParams(string[] args)
+        static (bool, string, string, bool, bool, int) ParseParams(string[] args)
         {
             bool load = false;
             string index = "fm-index.idx";
             string file = null;
             bool locate = false;
             bool verify = false;
+            int margin = 5;
             for (int i = 0; i < args.Length; ++i)
             {
                 (string key, string value) = ParseParameter(args[i]);
@@ -94,9 +104,13 @@ namespace app
                     locate = locateResult;
                 else if (key == nameof(verify) && bool.TryParse(value, out bool verifyResult))
                     verify = verifyResult;
+                else if (key == nameof(margin) && int.TryParse(value, out int marginResult))
+                    margin = marginResult;
             }
-            Console.WriteLine($"Parameters: {nameof(load)}={load}, {nameof(file)}={file}, {nameof(index)}={index}, {nameof(locate)}={locate} {nameof(verify)}={verify}");
-            return (load, file, index, locate, verify);
+            Console.WriteLine(
+                $"Parameters: {nameof(load)}={load}, {nameof(file)}={file}, {nameof(index)}={index}, " +
+                $"{nameof(locate)}={locate} {nameof(verify)}={verify} {nameof(margin)}={margin}");
+            return (load, file, index, locate, verify, margin);
         }
 
         static (string, string) ParseParameter(string s)

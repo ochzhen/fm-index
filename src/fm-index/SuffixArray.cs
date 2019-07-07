@@ -9,7 +9,7 @@ namespace FmIndex
         static int[] nextSA;
         static int[] nextClasses;
         
-        public static int[] Create(char[] s, int alphabetSize)
+        public static int[] Create(byte[] s, int alphabetSize)
         {
             alphabet = alphabetSize;
             int N = s.Length;
@@ -21,14 +21,14 @@ namespace FmIndex
             int L = 1;
             while (L < s.Length)
             {
-                SA = SortDoubled(s, L, SA, classes);
+                SA = SortDoubled(L, SA, classes);
                 classes = UpdateClasses(SA, classes, L);
                 L *= 2;
             }
             return SA;
         }
         
-        private static int[] SortChars(char[] s)
+        private static int[] SortChars(byte[] s)
         {
             int N = s.Length;
             var SA = new int[N];
@@ -45,7 +45,7 @@ namespace FmIndex
             return SA;
         }
         
-        private static int[] ComputeClasses(char[] s, int[] SA)
+        private static int[] ComputeClasses(byte[] s, int[] SA)
         {
             int N = s.Length;
             int[] classes = new int[N];
@@ -60,9 +60,9 @@ namespace FmIndex
             return classes;
         }
         
-        private static int[] SortDoubled(char[] s, int L, int[] SA, int[] classes)
+        private static int[] SortDoubled(int L, int[] SA, int[] classes)
         {
-            int N = s.Length;
+            int N = SA.Length;
             for (int i = 0; i < N; ++i)
                 count[classes[i]]++;
             for (int i = 1; i < N; ++i)

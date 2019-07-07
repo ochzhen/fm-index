@@ -14,7 +14,7 @@ namespace FmIndex
             (int minChar, int maxChar) = FindMinMaxChars(s);
             if (minChar == 0)
                 throw new ArgumentException($"Cannot assign anchor because zero character is present");
-            if (maxChar > 255)
+            if (maxChar > 254)
                 throw new ArgumentException($"Max character value is too large: {maxChar}");
             
             short[] arr = CreateInitializedArray(maxChar + 1);
@@ -80,19 +80,19 @@ namespace FmIndex
 
         public int Length => _alphabetSize;
 
-        public char Anchor => (char)0;
+        public byte Anchor => 0;
 
-        public char this[char c]
+        public byte this[char c]
         {
             get
             {
                 if (_arr[c] == -1)
                     throw new ArgumentException("Character is not present in derived alphabet");
-                return (char) _arr[c];
+                return (byte) _arr[c];
             }
         }
 
-        public bool TryConvert(char c, out char value)
+        public bool TryConvert(char c, out byte value)
         {
             if (c < 0 || c >= _arr.Length || _arr[c] == -1)
             {
@@ -100,7 +100,7 @@ namespace FmIndex
                 return false;
             }
 
-            value = (char) _arr[c];
+            value = (byte) _arr[c];
             return true;
         }
     }

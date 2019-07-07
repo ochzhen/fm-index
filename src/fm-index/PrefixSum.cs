@@ -7,12 +7,12 @@ namespace FmIndex.Abstract
     {
         private readonly int[] _counts;
 
-        public PrefixSum(char[] s, int alphabetSize)
+        public PrefixSum(byte[] s, int alphabetSize)
         {
             _counts = ConstructCountsArray(s, alphabetSize);
         }
 
-        private int[] ConstructCountsArray(char[] s, int alphabetSize)
+        private int[] ConstructCountsArray(byte[] s, int alphabetSize)
         {
             var counts = new int[alphabetSize];
             for (int i = 0; i < s.Length; ++i)
@@ -28,6 +28,6 @@ namespace FmIndex.Abstract
             return counts;
         }
 
-        int IPrefixSum.this[int c] => _counts[c];
+        int IPrefixSum.this[byte c] => _counts[c];
     }
 }
