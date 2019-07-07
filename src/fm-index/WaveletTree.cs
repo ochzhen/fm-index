@@ -27,8 +27,8 @@ namespace FmIndex
         private sealed class Node
         {
             private readonly IBitVector bitVector;
-            private readonly int alphaStart;
-            private readonly int alphaEnd;
+            private readonly short alphaStart;
+            private readonly short alphaEnd;
             private readonly Node left;
             private readonly Node right;
 
@@ -57,7 +57,7 @@ namespace FmIndex
                 right = new Node(s, m, hi, aux);
             }
 
-            private (int, int) GetAlphabetBounds(char[] s, int lo, int hi)
+            private (short, short) GetAlphabetBounds(char[] s, int lo, int hi)
             {
                 int min = int.MaxValue;
                 int max = int.MinValue;
@@ -68,12 +68,12 @@ namespace FmIndex
                     if (s[i] > max)
                         max = s[i];
                 }
-                return (min, max + 1);
+                return ((short)min, (short)(max + 1));
             }
 
             private bool BelongsLeft(int x)
             {
-                return x < (alphaStart + alphaEnd) / 2;
+                return x < alphaStart + (alphaEnd - alphaStart) / 2;
             }
 
             private int StablePartition(char[] s, int lo, int hi, Func<int, bool> belongsLeft, char[] aux)

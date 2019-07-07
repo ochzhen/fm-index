@@ -2,14 +2,14 @@ using System;
 
 namespace FmIndex
 {
-    internal static class BWT
+    internal static class SuffixArray
     {
         static int alphabet;
         static int[] count;
         static int[] nextSA;
         static int[] nextClasses;
         
-        public static int[] Transform(char[] s, int alphabetSize)
+        public static int[] Create(char[] s, int alphabetSize)
         {
             alphabet = alphabetSize;
             int N = s.Length;
@@ -25,8 +25,6 @@ namespace FmIndex
                 classes = UpdateClasses(SA, classes, L);
                 L *= 2;
             }
-            for (int i = 0; i < SA.Length; ++i)
-                SA[i] = (SA[i] - 1 + N) % N;
             return SA;
         }
         
@@ -102,7 +100,7 @@ namespace FmIndex
             return res;
         }
         
-        static void ClearArray(int[] a, int N)
+        private static void ClearArray(int[] a, int N)
         {
             for (int i = 0; i < N; ++i)
                 a[i] = 0;
