@@ -95,7 +95,7 @@ namespace app
         static (bool, string, string, bool, bool, int) ParseParams(string[] args)
         {
             bool load = false;
-            string index = "fm-index.idx";
+            string index = "indexes/fm-index.idx";
             string file = null;
             bool locate = false;
             bool verify = false;
