@@ -3,11 +3,11 @@ using System.Numerics;
 
 namespace FmIndex.Abstract
  {
-     [Serializable]
+    [Serializable]
     internal sealed class BitVector : IBitVector
     {
         private const int BUCKET_SIZE = 64;
-        private const int BLOCK_SIZE = 9;
+        private const int BLOCK_SIZE = 13;
 
         private readonly ulong[] _buckets;
         private readonly int[] _blocks;
