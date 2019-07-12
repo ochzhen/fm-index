@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using FmIndex.Abstract;
 
 namespace FmIndex
@@ -15,23 +16,32 @@ namespace FmIndex
         public FullTextIndex(string T, bool setupLocate, Action<string> logInfo)
         {
             T = T.ToLower();
-            logInfo($"AlphabetIds starting {DateTime.Now.ToLongTimeString()}");
+            logInfo($"Text length: {T.Length}");
+            var sw = new Stopwatch();
+
+            logInfo($"AlphabetIds starting...");
+            sw.Start();
             _alphabetIds = new AlphabetIds(T);
+            sw.Stop();
             logInfo($"- Alphabet size: {_alphabetIds.Length}");
-            logInfo($"AlphabetIds finished {DateTime.Now.ToLongTimeString()}");
+            logInfo($"AlphabetIds finished: {sw.ElapsedMilliseconds} ms, {sw.Elapsed}");
 
             byte[] s = CreateTransformedToNewAlphabet(T, _alphabetIds, T.Length + 1);
             s[s.Length - 1] = _alphabetIds.Anchor;
             
-            logInfo($"SuffixArray starting {DateTime.Now.ToLongTimeString()}");
+            logInfo($"SuffixArray starting...");
+            sw.Restart();
             int[] SA = SuffixArray.Create(s, _alphabetIds.Length);
-            logInfo($"SuffixArray finished {DateTime.Now.ToLongTimeString()}");
+            sw.Stop();
+            logInfo($"SuffixArray finished: {sw.ElapsedMilliseconds} ms, {sw.Elapsed}");
             
             if (setupLocate)
             {
-                logInfo($"CompressedSA starting {DateTime.Now.ToLongTimeString()}");
+                logInfo($"CompressedSA starting...");
+                sw.Restart();
                 _compressedSA = new CompressedSA(SA);
-                logInfo($"CompressedSA finished {DateTime.Now.ToLongTimeString()}");
+                sw.Stop();
+                logInfo($"CompressedSA finished: {sw.ElapsedMilliseconds} ms, {sw.Elapsed}");
             }
             else
             {
@@ -40,15 +50,19 @@ namespace FmIndex
 
             byte[] bwt = CreateBwt(SA, s);
 
-            logInfo($"PrefixSum starting {DateTime.Now.ToLongTimeString()}");
+            logInfo($"PrefixSum starting...");
+            sw.Restart();
             _prefixSum = new PrefixSum(bwt, _alphabetIds.Length + 1);
-            logInfo($"PrefixSum finished {DateTime.Now.ToLongTimeString()}");
+            sw.Stop();
+            logInfo($"PrefixSum finished: {sw.ElapsedMilliseconds} ms, {sw.Elapsed}");
 
-            logInfo($"WaveletTree starting {DateTime.Now.ToLongTimeString()}");
+            logInfo($"WaveletTree starting...");
+            sw.Restart();
             var waveletTree = new WaveletTree(bwt);
-            _occ = waveletTree;
-            logInfo($"WaveletTree finished {DateTime.Now.ToLongTimeString()}");
+            sw.Stop();
+            logInfo($"WaveletTree finished: {sw.ElapsedMilliseconds} ms, {sw.Elapsed}");
             logInfo($"- Nodes in the Wavelet Tree: {waveletTree.CountNodes()}");
+            _occ = waveletTree;
         }
 
         private byte[] CreateTransformedToNewAlphabet(string T, IAlphabetIds alphabetIds, int size)

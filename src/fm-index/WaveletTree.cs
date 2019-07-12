@@ -29,6 +29,7 @@ namespace FmIndex
             private readonly IBitVector bitVector;
             private readonly byte alphaStart;
             private readonly byte alphaEnd;
+            private readonly int anchorIdx;
             private readonly Node left;
             private readonly Node right;
 
@@ -40,8 +41,11 @@ namespace FmIndex
 
                 var bits = new bool[hi - lo];
                 int idx = 0;
+                anchorIdx = int.MaxValue;
                 for (int i = lo; i < hi; ++i)
                 {
+                    if (s[i] == 0)
+                        anchorIdx = idx;
                     if (BelongsLeft(s[i]))
                         bits[idx++] = false;
                     else
@@ -62,6 +66,8 @@ namespace FmIndex
                 int max = int.MinValue;
                 for (int i = lo; i < hi; ++i)
                 {
+                    if (s[i] == 0)
+                        continue;
                     if (s[i] < min)
                         min = s[i];
                     if (s[i] > max)
@@ -104,7 +110,9 @@ namespace FmIndex
                 if (IsLeaf)
                 {
                     if (BelongsLeft(c))
-                        return bitVector.RankZero(len);
+                        return alphaStart == 1 && anchorIdx < len 
+                            ? bitVector.RankZero(len) - 1 
+                            : bitVector.RankZero(len);
                     else
                         return bitVector.RankOne(len);
                 }

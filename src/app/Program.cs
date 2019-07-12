@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
+using System.Diagnostics;
 using FmIndex;
 
 namespace app
@@ -44,13 +45,18 @@ namespace app
 
             Console.WriteLine();
 
+            var sw = new Stopwatch();
+
             while (true)
             {
                 try
                 {
                     Console.WriteLine("- Enter pattern:");
                     string P = Console.ReadLine();
+                    sw.Restart();
                     int count = fmIndex.Count(P);
+                    sw.Stop();
+                    Console.WriteLine($"Count(P): length={P.Length}, {sw.ElapsedMilliseconds} ms");
                     Console.WriteLine($"== Answer: {count} occurrences");
                     
                     if (count == 0 || !setupLocate)
@@ -60,7 +66,10 @@ namespace app
                     string cmd = Console.ReadLine().Trim().ToUpper();
                     if (cmd == "Y")
                     {
+                        sw.Restart();
                         int[] positions = fmIndex.FindPositions(P, maxDisplayCount).ToArray();
+                        sw.Stop();
+                        Console.WriteLine($"Locate(P): length={P.Length}, {sw.ElapsedMilliseconds} ms, {positions.Length} entries");
                         Console.Write("== Positions:");
                         foreach(int pos in positions)
                             Console.Write($" {pos}");
@@ -69,7 +78,7 @@ namespace app
                         {
                             Console.Write("== Verification: ||");
                             foreach(int pos in positions)
-                                Console.Write($" ..{T.Substring(Math.Max(pos-margin, 0), P.Length + 2*margin).Replace($"{Environment.NewLine}", " ")}.. ||");
+                                Console.Write($" ..{T.Substring(Math.Max(pos-margin, 0), Math.Min(P.Length + 2*margin, T.Length - Math.Max(pos-margin, 0))).Replace($"{Environment.NewLine}", " ")}.. ||");
                             Console.WriteLine();
                         }
                     }
@@ -86,7 +95,7 @@ namespace app
         static (bool, string, string, bool, bool, int) ParseParams(string[] args)
         {
             bool load = false;
-            string index = "fm-index.idx";
+            string index = "indexes/fm-index.idx";
             string file = null;
             bool locate = false;
             bool verify = false;
