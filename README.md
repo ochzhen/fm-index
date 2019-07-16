@@ -17,27 +17,18 @@ FM-index consists of _PrefixSum_, _Occurrences_ and _Compressed Suffix Array_ da
 <img src="images/fm-index.png" />
 </p>
 
-
 PrefixSum and Occurrences data structures are used to support LF-mapping operation in Burrows-Wheeler transform.
 Compressed Suffix Array is useful when finding positions of occurrences.
 
-<br />
-
 **PrefixSum** implementation is simple: just counts array of the size of the alphabet.
-
 <br />
-
 **Occurrences** data structure is implemented as a **wavelet tree**.
-
-<br />
 
 **Compressed Suffix Array** stores only subset of suffix array entries (every k-th) and also maintains a **bit array** which signifies what entries of BWT have direct mappings. LF-mapping allows to go backwards in text if for some particular entry direct mapping is not stored.
 
 <p align="center">
 <img src="images/compressed-sa.png" />
 </p>
-
-<br />
 
 **Bit Array** that is used in wavelet tree and compressed suffix array implementations consists of _ulong_ array for storing bits and auxiliary array where prefix sum information is kept.
 This data structure supports **Rank(prefixLen)** operation in O(1) and also answers whether k-th bit is set. See a conceptual diagram below.
