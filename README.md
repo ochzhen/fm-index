@@ -47,7 +47,6 @@ Also some notes on the implementation:
 * Wavelet tree node with alphabet range 2 or smaller is a leaf
 * Wavelet tree node with anchor character has alphabet range 3
 
-<hr />
 
 ## Some results
 
